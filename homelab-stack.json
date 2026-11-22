@@ -1,7 +1,8 @@
 {
-  "version": 8,
+  "version": 9,
   "name": "calibre-web",
   "nixpkgs": "nixos-unstable",
+  "icon": "calibre-web",
   "routes": [
     { "host": "calibre", "port": 8083 },
     { "host": "books", "port": 8084 }
@@ -44,5 +45,9 @@
   },
   "health": {
     "units": ["podman-calibre-web.service", "podman-calibre-web-downloader.service"]
-  }
+  },
+  "services": [
+    { "unit": "podman-calibre-web.service", "icon": "calibre-web" },
+    { "unit": "podman-calibre-web-downloader.service", "icon": "calibre-web-automated-book-downloader" }
+  ]
 }
