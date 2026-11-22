@@ -1,0 +1,48 @@
+{
+  "version": 8,
+  "name": "calibre-web",
+  "nixpkgs": "nixos-unstable",
+  "routes": [
+    { "host": "calibre", "port": 8083 },
+    { "host": "books", "port": 8084 }
+  ],
+  "containers": true,
+  "egress": [{ "to": "host", "port": 25 }],
+  "variables": [
+    {
+      "name": "BOOKS_DIR",
+      "kind": "path",
+      "description": "The Calibre library. Its owner and group become the stack's books user and media group, which the apps write as.",
+      "required": true,
+      "mount": "/pool/media/books",
+      "owner": "books",
+      "group": "media"
+    },
+    {
+      "name": "BOOKS_INGEST_DIR",
+      "kind": "path",
+      "description": "The ingest folder: books dropped here, or fetched by the downloader, are added to the library.",
+      "required": true,
+      "mount": "/pool/media/books-ingest",
+      "group": "media"
+    }
+  ],
+  "backup": {
+    "folders": [
+      { "label": "Book library", "variable": "BOOKS_DIR" },
+      {
+        "label": "Calibre-Web settings",
+        "path": "/var/lib/calibre-web",
+        "exclude": [
+          { "pattern": "/processed_books/**", "reason": "Copies of books already added to the library." },
+          { "pattern": "/thumbnails/**", "reason": "Cover thumbnails. They are made again." },
+          { "pattern": "/log_archive/**", "reason": "Log files." },
+          { "pattern": "/.cache/**", "reason": "Temporary files." }
+        ]
+      }
+    ]
+  },
+  "health": {
+    "units": ["podman-calibre-web.service", "podman-calibre-web-downloader.service"]
+  }
+}
